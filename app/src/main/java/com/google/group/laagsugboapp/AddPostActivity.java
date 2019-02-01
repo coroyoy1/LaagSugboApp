@@ -39,6 +39,7 @@ public class AddPostActivity extends AppCompatActivity {
 
     private Uri mImageUri;
 
+
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
 
