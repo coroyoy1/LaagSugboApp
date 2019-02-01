@@ -48,7 +48,7 @@ public class AddPostActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post2);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         imageUpload = findViewById(R.id.imageView);
         uploadData = findViewById(R.id.uploadButton);
