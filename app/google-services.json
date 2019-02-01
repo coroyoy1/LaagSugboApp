@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "383781191864",
+    "firebase_url": "https://laagsugboapp-35fae.firebaseio.com",
+    "project_id": "laagsugboapp-35fae",
+    "storage_bucket": "laagsugboapp-35fae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383781191864:android:84642060f3524096",
+        "android_client_info": {
+          "package_name": "com.google.group.laagsugboapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383781191864-er7qecpli4at13fvs194947g2rrjeic1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.google.group.laagsugboapp",
+            "certificate_hash": "fcb1d0734ae407708e150a2609fdf92ee463e7fa"
+          }
+        },
+        {
+          "client_id": "383781191864-4lmjksu5qgio3b3lnevebun7r9cjioso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBqSfGvAc8Ms1zAKrnVSPB7t-ZQOZtQGQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383781191864-4lmjksu5qgio3b3lnevebun7r9cjioso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
