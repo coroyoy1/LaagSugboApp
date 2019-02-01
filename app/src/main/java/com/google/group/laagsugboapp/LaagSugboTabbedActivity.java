@@ -1,5 +1,7 @@
 package com.google.group.laagsugboapp;
 
+import android.content.ClipData;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,6 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LaagSugboTabbedActivity extends AppCompatActivity {
 
@@ -35,7 +40,7 @@ public class LaagSugboTabbedActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +70,8 @@ public class LaagSugboTabbedActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
 
@@ -85,6 +92,13 @@ public class LaagSugboTabbedActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if(id == R.id.action_logout)
+        {
+            mAuth.getInstance().signOut();
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
+            Toast.makeText(this, "Successfully logged-out", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);

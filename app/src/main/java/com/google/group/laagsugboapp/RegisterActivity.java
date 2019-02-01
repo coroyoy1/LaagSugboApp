@@ -1,5 +1,6 @@
 package com.google.group.laagsugboapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,191 +45,118 @@ public class RegisterActivity extends AppCompatActivity {
 
     static int PReqCode = 1;
     static int REQUESTCODE = 1;
-    Uri uri;
-    Boolean clickable=false;
+    FirebaseDatabase firebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
-    Spinner spinnerRegister;
-    EditText fullNameRegister, ageRegister, addressRegister, contactRegister, emailRegister, passwordRegister;
-    ProgressBar loadingProgressBar;
-    ProgressDialog progressDialog;
-    private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef;
+    EditText fullname;
+    EditText email;
+    EditText address;
+    EditText number;
+    EditText password;
+    EditText retypePassword;
 
-    private StorageTask mUploadTask;
-    private FirebaseAuth mAuth;
-
+    Button RegisterSignUp;
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        auth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = firebaseDatabase.getReference("users");
 
-        mAuth = FirebaseAuth.getInstance();
+        fullname = (EditText)findViewById(R.id.FullnameEditText);
+        email = (EditText)findViewById(R.id.EmailEditText);
+        address = findViewById(R.id.RegisterAddress);
+        number = findViewById(R.id.NumberEditText);
+        password = findViewById(R.id.PasswordEditText);
+        retypePassword = findViewById(R.id.retypePasswordEditText);
+        RegisterSignUp = findViewById(R.id.RegisterSignUp);
 
-        fullNameRegister = (EditText) findViewById(R.id.RegisterFullName);
-        addressRegister = (EditText) findViewById(R.id.RegisterAddress);
-        contactRegister = (EditText) findViewById(R.id.RegisterContact);
-        emailRegister = (EditText) findViewById(R.id.RegisterEmailAddress);
-        passwordRegister = (EditText) findViewById(R.id.RegisterPassword);
-
-        loadingProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
-
-        progressDialog = new ProgressDialog(RegisterActivity.this);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setProgress(0);
-
-        loadingProgressBar.setVisibility(View.INVISIBLE);
-
-        imageView = (ImageView)findViewById(R.id.RegisterPhoto);
-        addPhoto = (Button) findViewById(R.id.addPhotoRegister);
-        signUp = (Button) findViewById(R.id.RegisterSignUp);
-
-        addPhoto.setOnClickListener(new View.OnClickListener() {
+        RegisterSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickable=true;
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-            }
-        });
-
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!(RegisterActivity.this).isFinishing())
-                {
-                    progressDialog.show();
-                }
-                String spinnerString = spinnerRegister.getSelectedItem().toString();
-                String fullnameString = fullNameRegister.getText().toString();
-                String ageString = ageRegister.getText().toString();
-                String addressString = addressRegister.getText().toString();
-                String contactString = contactRegister.getText().toString();
-                String emailString = emailRegister.getText().toString();
-                String passwordString = passwordRegister.getText().toString();
-
-                if(passwordString.isEmpty() || fullnameString.isEmpty() || ageString.isEmpty() || addressString.isEmpty() || contactString.isEmpty() || emailString.isEmpty())
-                {
-                    showMessage("Some fields are missing");
-                    progressDialog.dismiss();
-                }
-                else
-                {
-                    CreateAccountUser(passwordString, fullnameString, addressString, contactString, emailString);
-                }
+                addUsers();
             }
         });
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+    private void addUsers(){
+        final String fname = fullname.getText().toString().trim();
+        final String add = address.getText().toString().trim();
+        final String mail = email.getText().toString().trim();
+        final String numbers = number.getText().toString().trim();
+        final String pass = password.getText().toString().trim();
+        final String retype = retypePassword.getText().toString().trim();
+        if(fname.isEmpty()){
+            fullname.setError("Required!");
+            fullname.requestFocus();
+            return;
         }
-    }
-
-    private void CreateAccountUser(final String passwordString, final String fullnameString, final String addressString, final String contactString, final String emailString)
-    {
-        mAuth.createUserWithEmailAndPassword(emailString, passwordString)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                                Users user = new Users(fullnameString, emailString, addressString, contactString, passwordString);
-                                FirebaseDatabase.getInstance().getReference("Users")
-                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                        .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            showMessage("Successfully Register");
-                                        } else {
-                                            showMessage("Error to Register");
-                                        }
-                                    }
-                                });
-                                updateUserInfo(fullnameString, uri, mAuth.getCurrentUser());
-
-                                updateUserInfo(fullnameString, uri, mAuth.getCurrentUser());
+        else if(mail.isEmpty()){
+            email.setError("Required!");
+            email.requestFocus();
+            return;
+        }
+        else if(mail.isEmpty()){
+            address.setError("Required!");
+            address.requestFocus();
+            return;
+        }
+        else if(numbers.isEmpty()){
+            number.setError("Required!");
+            number.requestFocus();
+            return;
+        }
+        else if(pass.isEmpty()){
+            password.setError("Required!");
+            password.requestFocus();
+            return;
+        }
+        else if(!retype.equals(pass))
+        {
+            password.setError("Password not match!");
+            password.requestFocus();
+            return;
+        }
+        else {
+            auth.createUserWithEmailAndPassword(mail, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful())
+                    {
+                        String iduname = mDatabaseReference.push().getKey();
+                        Users getterandsetter = new Users(fname, mail,add, numbers, pass);
+                        mDatabaseReference.push().setValue(getterandsetter).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful())
+                                {
+                                    Toast.makeText(RegisterActivity.this, "User added",Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    Toast.makeText(RegisterActivity.this, "Error",Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        else
-                        {
-                            showMessage("Failed to register" + task.getException().getMessage());
-                            progressDialog.dismiss();
-                        }
+                        });
+
+                        fullname.getText().clear();
+                        email.getText().clear();
+                        address.getText().clear();
+                        number.getText().clear();
+                        password.getText().clear();
+                        retypePassword.getText().clear();
                     }
-                });
-    }
-
-    private void updateUserInfo(final String fullnameString, Uri uri, final FirebaseUser currentUser)
-    {
-        String userID = mAuth.getCurrentUser().getUid();
-        final StorageReference mStorage = FirebaseStorage.getInstance().getReference().child("users_photos").child(userID+"/"+"profilePicture");
-        mStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                mStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(fullnameString)
-                                .setPhotoUri(uri)
-                                .build();
-                        currentUser.updateProfile(profileUpdate)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful())
-                                        {
-                                            passToNextActivity();
-                                            progressDialog.dismiss();
-                                        }
-                                    }
-                                });
-                    }
-                });
-            }
-        });
-    }
-
-    private void passToNextActivity()
-    {
-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    private void showMessage(String s) {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK)
-        {
-            if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
-                uri = data.getData();
-
-                if(clickable) {
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        imageView.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    else
+                    {
+                        Toast.makeText(RegisterActivity.this, "Please enter a valid EMAIL and a strong password(usually not less than 6 letters)",Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        }
-        else
-        {
-            Toast.makeText(RegisterActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
-        }
+            });
 
+
+        }
     }
 }
