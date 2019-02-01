@@ -17,7 +17,7 @@
         </activity>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".AddPostActivity"
-            android:theme="@style/"/>
+            android:theme="@style/Theme.Design.Light"/>
         <activity
             android:name=".LaagSugboMainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
